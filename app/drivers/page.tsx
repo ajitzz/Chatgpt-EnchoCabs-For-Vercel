@@ -25,7 +25,7 @@ export default async function DriversPage() {
     orderBy: { createdAt: "desc" },
   });
 
-  const initialDrivers: DriverListItem[] = rows.map((d) => ({
+  const initialDrivers: DriverListItem[] = rows.map((d:any) => ({
     id: d.id,
     name: d.name ?? "",
     licenseNumber: (d as any).licenseNumber ?? "",
