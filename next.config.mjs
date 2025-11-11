@@ -2,6 +2,9 @@
 const nextConfig = {
   experimental: {
     serverActions: { bodySizeLimit: "10mb" }
+  },
+  images: {
+    domains: ['i.ibb.co']
   }
 };
 

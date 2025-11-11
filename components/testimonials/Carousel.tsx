@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, useCallback } from 'react';
 import s from './Testimonials.module.css';
 
 type Props = { children: React.ReactNode };
@@ -29,13 +29,14 @@ export default function Carousel({ children }: Props){
     return () => window.removeEventListener('resize', onResize);
   }, []);
 
-  useEffect(() => {
-    const id = setInterval(() => next(), 4000);
-    return () => clearInterval(id);
-  }, [show, index]);
+  const next = useCallback(() => setIndex(i => (i + show) % slides.length), [show, slides.length]);
+  const prev = useCallback(() => setIndex(i => (i - show + slides.length) % slides.length), [show, slides.length]);
 
-  const next = () => setIndex(i => (i + show) % slides.length);
-  const prev = () => setIndex(i => (i - show + slides.length) % slides.length);
+  useEffect(() => {
+    const id = setInterval(next, 4000);
+    return () => clearInterval(id);
+  }, [next]);
+
   const page = Math.floor(index / show);
   const pages = Math.ceil(slides.length / show);
 

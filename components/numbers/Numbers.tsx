@@ -1,4 +1,5 @@
 import { numbers } from '@/lib/data/numbers';
+import Image from 'next/image';
 import s from './Numbers.module.css';
 
 export default function Numbers() {
@@ -6,7 +7,14 @@ export default function Numbers() {
     <section id="numbers" className={s.section} aria-label="Autono in Numbers">
       <div className={`container ${s.grid}`}>
         <figure className={s.fig}>
-          <img src={numbers.image} alt="Mechanical arm render" />
+          <Image
+            src={numbers.image}
+            alt="Mechanical arm render"
+            width={720}
+            height={480}
+            // allow the browser to decide when to load this image
+            priority={false}
+          />
         </figure>
 
         <div className={s.copy}>
