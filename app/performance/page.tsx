@@ -47,9 +47,11 @@ export default async function Page() {
     }));
 
     return <PerformanceClient drivers={views} />;
-  } catch {}
+  } catch (e) {
+    console.warn("[performance] relation include failed; falling back", e);
+  }
 
-  // Fallback: fetch drivers without `select` (avoid TS errors on optional fields)
+  // Fallback: fetch drivers without select (avoid TS errors on optional fields)
   const driversOnly = await prisma.driver.findMany({
     where: { hidden: false as any, removedAt: null as any },
     orderBy: { name: "asc" as const },

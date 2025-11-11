@@ -1,69 +1,40 @@
-// app/drivers/page.tsx
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 import { unstable_noStore as noStore } from "next/cache";
 import { getPrisma } from "@/lib/prisma";
-// If you have a client component, keep this import. Otherwise, render inline.
-// import DriversClient, { type DriverListItem } from "./_components/DriverClient";
+import DriversClient, { type DriverListItem } from "./_components/DriverClient";
 
-type DriverRow = {
-  id: string;
-  name: string;
-  hidden?: boolean | null;
-  createdAt?: string | null;
-};
+/** Convert a JS Date to YYYY-MM-DD (UTC) or null */
+function toISODateOnly(d?: Date | null) {
+  if (!d) return null;
+  const utc = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+  return utc.toISOString().slice(0, 10);
+}
 
 export default async function DriversPage() {
-  noStore();
+  noStore(); // ensure fresh data on every request
+
   const prisma = getPrisma();
+  const rows = await prisma.driver.findMany({
+    where: {
+      // Keep removed rows out of the list if your schema has this column
+      // @ts-ignore - optional column in some schemas
+      removedAt: null,
+    },
+    orderBy: { createdAt: "desc" },
+  });
 
-  let rows: DriverRow[] = [];
-  try {
-    const raw = await prisma.driver.findMany({
-      orderBy: { createdAt: "desc" as const },
-    });
-    rows = raw.map((r: any) => ({
-      id: r.id,
-      name: r.name,
-      hidden: r.hidden ?? null,
-      createdAt: r.createdAt ? new Date(r.createdAt).toISOString() : null,
-    }));
-  } catch {
-    rows = [];
-  }
+  const initialDrivers: DriverListItem[] = rows.map((d) => ({
+    id: d.id,
+    name: d.name ?? "",
+    licenseNumber: (d as any).licenseNumber ?? "",
+    phone: (d as any).phone ?? "",
+    joinDate: toISODateOnly((d as any).joinDate ?? null),
+    profileImageUrl: (d as any).profileImageUrl ?? "",
+    hidden: Boolean((d as any).hidden),
+    createdAt: (d.createdAt ?? new Date()).toISOString(),
+  }));
 
-  // If you have a DriversClient component, you can pass rows to it instead.
-  // return <DriversClient initialRows={rows as any} />;
-
-  return (
-    <main className="p-6">
-      <h1 className="text-xl font-semibold mb-4">Drivers</h1>
-      <div className="rounded border">
-        <table className="w-full text-sm">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="text-left p-2">Name</th>
-              <th className="text-left p-2">Created</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((d) => (
-              <tr key={d.id} className="border-t">
-                <td className="p-2">{d.name}</td>
-                <td className="p-2">{d.createdAt ?? "-"}</td>
-              </tr>
-            ))}
-            {rows.length === 0 && (
-              <tr>
-                <td colSpan={2} className="p-4 text-gray-500">
-                  No drivers found.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
-    </main>
-  );
+  return <DriversClient initialDrivers={initialDrivers} />;
 }
