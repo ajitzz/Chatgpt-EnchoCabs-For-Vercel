@@ -8,8 +8,6 @@ import { z } from "zod";
 
 const prisma = getPrisma();
 
-type Prisma = typeof prisma;
-
 // …your server actions (unchanged below)
 
 /* ----------------------------- Date helpers ----------------------------- */

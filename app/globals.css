@@ -3,6 +3,7 @@
 @tailwind components;
 @tailwind utilities;
 
+
 :root{
   --bg:#111111;
   --text:#D7D4D5;
@@ -138,7 +139,7 @@ img{max-width:100%;display:block}
 }
 
 /* ---- Tailwind v4 theme mappings (enables bg-background, border-border, etc.) ---- */
-@theme {
+:root {
 
   --shadow-card: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
   --shadow-card-hover: 0 10px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
@@ -198,9 +199,10 @@ img{max-width:100%;display:block}
 @layer base {
   * {
     /* This sets ONLY the border color (not border width) globally */
-    @apply border-border;
+    border-color: var(--color-border);
   }
   body {
-    @apply bg-background text-foreground;
+    background-color: var(--color-background);
+    color: var(--color-foreground);
   }
 }
