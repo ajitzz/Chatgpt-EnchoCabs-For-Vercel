@@ -10,8 +10,8 @@ export default function Parallax() {
           <p>
             Accommodation, meals, and safe vehicles — all in one plan. Our driver-first programs help you focus on earning while we support your family’s comfort.
           </p>
-          <a className={s.btn} href="#apply">
-            Learn More <i className="fa-solid fa-arrow-right" />
+          <a className={`${s.btn} mt-5`} href="#apply">
+            Contact us <i className="fa-solid fa-arrow-right " />
           </a>
         </div>
         <div aria-hidden="true" />

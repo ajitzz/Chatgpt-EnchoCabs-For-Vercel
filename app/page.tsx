@@ -17,7 +17,6 @@ export default function HomePage() {
       <Vision />
       <Services />
       <Rental />
-       {/* <Collapsible /> */}
       <Salary />
       <Parallax />
       <Numbers />
