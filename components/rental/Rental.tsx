@@ -1,19 +1,23 @@
 import s from './Rental.module.css';
-
+import Collapsible from '@/components/Collapsible/Collapsible';
+import PremiumWhatYouGetCard from '@/components/PremiumWhatYouGetCard/PremiumWhatYouGetCard';
 export default function Rental() {
   return (
-    <section id="rental" className={s.section} aria-label="Rental Plan">
+    <section id="rental" className={`${s.section} grid grid-cols-1  gap-8`} aria-label="Rental Plan">
       <div className={`container ${s.grid}`}>
         <div className={s.text}>
+         
+          
+            <div className="grid grid-cols-1 gap-8  md:items-start">
+        {/* Left column: collapsible copy shows 7-sentence preview; action at bottom */}
+        <div className="md:col-span-7">
           <h2 className={s.h2}>RENTAL PLAN</h2>
-          <div className={s.scroll}>
-            <p>
-              Welcome to Our Vehicle Rental Service! We Provide Reliable Vehicles for Drivers on a Daily Basis, Allowing You to Maximize your Earnings with Platforms like Uber and Ola. Plus, enjoy the added Benefit of a Free Furnished Room to Make your Experience Even Better.
-            </p>
-          </div>
-          <a className={`${s.btn} ${s.btnLight}`} href="#apply">
-            Read More <i className="fa-solid fa-arrow-right" />
-          </a>
+          <Collapsible/>
+        </div>
+
+
+      
+      </div>
         </div>
 
         <div className={s.frame}>
@@ -25,6 +29,10 @@ export default function Rental() {
           />
         </div>
       </div>
+        <div className={`container ${s.grid} `}>
+         <PremiumWhatYouGetCard  />
+
+        </div>
     </section>
   );
 }

@@ -8,7 +8,7 @@ import Parallax from '@/components/parallax/Parallax';
 import Numbers from '@/components/numbers/Numbers';
 import Testimonials from '@/components/testimonials/Testimonials';
 import Footer from '@/components/footer/Footer';
-
+import Collapsible from '@/components/Collapsible/Collapsible';
 export default function HomePage() {
   return (
     <>
@@ -17,6 +17,7 @@ export default function HomePage() {
       <Vision />
       <Services />
       <Rental />
+       {/* <Collapsible /> */}
       <Salary />
       <Parallax />
       <Numbers />

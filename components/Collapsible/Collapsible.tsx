@@ -1,0 +1,89 @@
+"use client";
+import React, { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+
+
+// const easeOut: number[] = [0.16, 1, 0.3, 1];
+
+function splitSentences(text: string): string[] {
+  const parts = text.match(/[^.!?]+[.!?]+|[^.!?]+$/g);
+  return parts ? parts.map((t) => t.trim()) : [text];
+}
+
+function CollapsibleCopy({
+  text,
+  previewSentences = 7,
+}: {
+  text: string;
+  previewSentences?: number;
+}) {
+  const [expanded, setExpanded] = useState(false);
+  const sentences = splitSentences(text);
+  const preview = sentences.slice(0, previewSentences).join(" ");
+  const rest = sentences.slice(previewSentences).join(" ");
+
+  return (
+    <div className="flex min-h-[220px] flex-col">
+      <motion.div layout className="relative text-left">
+        <AnimatePresence initial={false} mode="wait">
+          {!expanded ? (
+            <motion.p
+              key="preview"
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -6 }}
+              transition={{ duration: 0.2 }}
+              className="text-black/80"
+            >
+              {preview}
+            </motion.p>
+          ) : (
+            <motion.p
+              key="full"
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -6 }}
+              transition={{ duration: 0.25 }}
+              className="text-black/90"
+            >
+              {text}
+            </motion.p>
+          )}
+        </AnimatePresence>
+
+        {/* Gradient fade only when collapsed */}
+        {!expanded && rest && (
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-white to-transparent" />
+        )}
+      </motion.div>
+
+      {/* Bottom action */}
+      {rest && (
+        <div className="mt-6">
+          <button
+            onClick={() => setExpanded((s) => !s)}
+            className="inline-flex items-center justify-center gap-2 rounded-xl border border-black/10 bg-black/5 px-5 py-2.5 text-sm font-medium text-black/90 backdrop-blur transition hover:bg-black/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-black/60 focus-visible:ring-offset-2 focus-visible:ring-offset-black"
+          >
+            {expanded ? "Show less" : "Read more"}
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default function RentalPlan() {
+  const content = `Our Rental Plan is engineered for drivers who want reliability and simplicity. Pay a fixed, predictable weekly fee that covers the vehicle, scheduled maintenance, and essential support. No hidden fees. No surprises. Whether you’re scaling your hours or optimizing routes, the Rental Plan helps you stay focused on driving and earning—while we handle the rest. Enjoy flexible terms designed to maximize uptime. Get responsive assistance when you need it most. Experience a premium vehicle setup that elevates every ride. Benefit from clear terms, quick onboarding, and continuous support that keeps you moving.`;
+
+  return (
+    <section id="rental" className="mx-auto mt-12 max-w-6xl px-6">
+      <div className="md:grid-cols-12 md:items-start">
+        {/* Left column: collapsible copy shows 7-sentence preview; action at bottom */}
+        <div className="md:col-span-7">
+          <CollapsibleCopy text={content} previewSentences={7} />
+        </div>
+
+      </div>
+    </section>
+  );
+}
