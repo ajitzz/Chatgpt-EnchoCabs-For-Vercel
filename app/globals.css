@@ -205,4 +205,13 @@ img{max-width:100%;display:block}
     background-color: var(--color-background);
     color: var(--color-foreground);
   }
+  @keyframes shine {
+  0% { background-position: 0% 50%; }
+  100% { background-position: -200% 50%; }
+}
+
+@keyframes ripple {
+  from { transform: translate(-50%,-50%) scale(.2); opacity:.45; }
+  to   { transform: translate(-50%,-50%) scale(2.2); opacity:0; }
+}
 }
