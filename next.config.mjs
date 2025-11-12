@@ -4,7 +4,17 @@ const nextConfig = {
     serverActions: { bodySizeLimit: "10mb" }
   },
   images: {
-    domains: ['i.ibb.co']
+    domains: ['i.ibb.co'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'example.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'cdn.example.org',
+      },
+    ],
   }
 };
 

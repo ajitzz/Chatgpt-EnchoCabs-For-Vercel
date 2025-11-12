@@ -191,7 +191,7 @@ export default function TestimonialCarousel({
         What our Drivers say
       </h2>
 
-      <div className="relative mx-auto max-w-6xl px-6">
+      <div className="relative mx-auto px-6">
         <ul
           ref={rootRef}
           className="no-scrollbar -mx-4 flex snap-x snap-mandatory gap-6 overflow-x-auto px-4 pb-6"
@@ -207,7 +207,8 @@ export default function TestimonialCarousel({
               <article className="h-full rounded-2xl bg-white p-6 shadow-xl ring-1 ring-black/5">
                 <header className="mb-4 flex items-center gap-4">
                  
-                  <Image  src={t.avatar} alt="" className="h-12 w-12 rounded-full object-cover" />
+                  <Image  src={t.avatar} alt="" className="h-12 w-12 rounded-full object-cover"  width={400}
+  height={400}/>
                   <div className="min-w-0">
                     <div className="flex items-center gap-2">
                       <h3 className="truncate text-lg font-semibold text-gray-900">{t.name}</h3>
