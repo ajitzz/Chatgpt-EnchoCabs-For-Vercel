@@ -1,11 +1,18 @@
 import React from 'react';
 import type { Metadata } from 'next';
+import { Montserrat } from "next/font/google";
 import './globals.css';
-import { Inter, Poppins } from 'next/font/google';
+
    import Header from '@/components/header/Header';
 
-const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
-const poppins = Poppins({ weight: ['600','700'], subsets: ['latin'], variable: '--font-poppins' });
+   const montserrat = Montserrat({
+  subsets: ["latin"],
+  weight: ["400","500","600","700"],   // add the weights you’ll use
+  display: "swap",
+  variable: "--font-sans",
+});
+
+
 
 export const metadata: Metadata = {
   title: 'ENCHO — Taxi Rental for Drivers',
@@ -14,7 +21,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${inter.variable} ${poppins.variable}`}>
+    <html lang="en" className={`${montserrat.variable} `}>
       <head>
         <link
           rel="stylesheet"

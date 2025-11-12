@@ -6,7 +6,7 @@ export default function Parallax() {
       <div className={`container ${s.wrap}`}>
         <div className={s.panel}>
           <div className={s.eyebrow}>Support</div>
-          <h2 className={s.h2}>We build a stable life while you drive</h2>
+          <h2 className={`${s.h2} font-semibold`}>We build a stable life while you drive</h2>
           <p>
             Accommodation, meals, and safe vehicles — all in one plan. Our driver-first programs help you focus on earning while we support your family’s comfort.
           </p>

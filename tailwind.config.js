@@ -9,6 +9,14 @@ module.exports = {
   ],
   theme: {
     extend: {
+       fontFamily: {
+        // `font-sans` now = Montserrat loaded via next/font
+        sans: ["var(--font-sans)", "system-ui", "sans-serif"],
+      },
+      letterSpacing: {
+        // handy for small uppercase captions
+        wideCaps: "0.16em",
+      },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",

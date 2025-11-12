@@ -1,8 +1,11 @@
 import s from './Hero.module.css';
 import ExplorePremiumSection from './ExplorePremiumSection';
+import { Inter, Poppins } from 'next/font/google';
+const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
+const poppins = Poppins({ weight: ['600','700'], subsets: ['latin'], variable: '--font-poppins' });
 export default function Hero(){
   return (
-    <section id="hero" className={s.hero} aria-label="ENCHO Hero">
+    <section id="hero" className={`${inter.variable} ${poppins.variable} ${s.hero}`} aria-label="ENCHO Hero">
       <div className=" h-full releative  container">
       <div className='absolute bottom-1/2 left-0 right-0'>
  <div className={s.eyebrow}>Taxi Rental • Accommodation • Food • Vehicles</div>

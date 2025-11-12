@@ -20,7 +20,7 @@ export default function HomePage() {
       <Salary />
       <Parallax />
       <Numbers />
-      <Testimonials />
+     <Testimonials items={[]} autoplay interval={3500} />
       <Footer />
     </>
   );
