@@ -1,6 +1,5 @@
 "use client";
-
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -17,8 +16,25 @@ type Row = {
   hidden: boolean;
 };
 
+function toInputDate(value: string | Date | null | undefined): string {
+  if (!value) return "";
+  const date = typeof value === "string" ? new Date(value) : value;
+  if (!(date instanceof Date) || Number.isNaN(date.getTime())) return "";
+  return new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())).toISOString().slice(0, 10);
+}
+
+function toNumber(value: unknown, fallback: number): number {
+  if (value == null) return fallback;
+  const parsed = Number((value as any)?.toString?.() ?? value);
+  return Number.isFinite(parsed) ? parsed : fallback;
+}
+
 export default function DeleteWeeklyTableClient({ initialRows }: { initialRows: Row[] }) {
   const [rows, setRows] = useState<Row[]>(initialRows);
+  const rowsRef = useRef(rows);
+  useEffect(() => {
+    rowsRef.current = rows;
+  }, [rows]);
   const [selected, setSelected] = useState<Record<number, boolean>>({});
 
   const selectedIds = useMemo(() => Object.entries(selected).filter(([, v]) => v).map(([k]) => Number(k)), [selected]);
@@ -57,7 +73,10 @@ export default function DeleteWeeklyTableClient({ initialRows }: { initialRows: 
     );
   }
 
-  async function onEdit(row: Row) {
+
+  async function onEdit(rowId: number) {
+    const row = rowsRef.current.find((r) => r.id === rowId);
+    if (!row) return;
     const patch = {
       weekStart: row.weekStart,
       earnings: row.earnings,
@@ -72,7 +91,24 @@ export default function DeleteWeeklyTableClient({ initialRows }: { initialRows: 
     if (!res.ok) {
       const j = await res.json().catch(() => ({}));
       alert(j?.error ?? "Failed to update");
+      return;
     }
+    const updated = await res.json().catch(() => null);
+    if (!updated) return;
+    setRows((prev) =>
+      prev.map((r) =>
+        r.id === rowId
+          ? {
+              ...r,
+              weekStart: toInputDate(updated.weekStart ?? updated.weekStartDate) || r.weekStart,
+              weekEnd: toInputDate(updated.weekEnd ?? updated.weekEndDate) || r.weekEnd,
+              earnings: toNumber(updated.earnings ?? updated.earningsInINR, r.earnings),
+              trips: toNumber(updated.trips ?? updated.tripsCompleted, r.trips),
+              notes: typeof updated.notes === "string" ? updated.notes : r.notes,
+            }
+          : r
+      )
+    );
   }
 
   return (
@@ -112,7 +148,8 @@ export default function DeleteWeeklyTableClient({ initialRows }: { initialRows: 
                     value={r.weekStart}
                     type="date"
                     onChange={(e) => setRows((prev) => prev.map((x) => (x.id === r.id ? { ...x, weekStart: e.target.value } : x)))}
-                    onBlur={() => onEdit(r)}
+                   
+                    onBlur={() => onEdit(r.id)}
                   />
                 </TableCell>
                 <TableCell className="whitespace-nowrap">{r.weekEnd}</TableCell>
@@ -123,7 +160,8 @@ export default function DeleteWeeklyTableClient({ initialRows }: { initialRows: 
                     onChange={(e) =>
                       setRows((prev) => prev.map((x) => (x.id === r.id ? { ...x, earnings: Number(e.target.value) } : x)))
                     }
-                    onBlur={() => onEdit(r)}
+                   
+                    onBlur={() => onEdit(r.id)}
                   />
                 </TableCell>
                 <TableCell>
@@ -133,14 +171,16 @@ export default function DeleteWeeklyTableClient({ initialRows }: { initialRows: 
                     onChange={(e) =>
                       setRows((prev) => prev.map((x) => (x.id === r.id ? { ...x, trips: Number(e.target.value) } : x)))
                     }
-                    onBlur={() => onEdit(r)}
+                   
+                    onBlur={() => onEdit(r.id)}
                   />
                 </TableCell>
                 <TableCell className="min-w-[200px]">
                   <Input
                     value={r.notes}
                     onChange={(e) => setRows((prev) => prev.map((x) => (x.id === r.id ? { ...x, notes: e.target.value } : x)))}
-                    onBlur={() => onEdit(r)}
+                   
+                    onBlur={() => onEdit(r.id)}
                   />
                 </TableCell>
                 <TableCell className="text-right">

@@ -24,14 +24,20 @@ const updateSchema = z.object({
   earnings: z.coerce.number().optional(),
   trips: z.coerce.number().int().optional(),
 });
-
+function coerceId(raw: string) {
+  const numeric = Number(raw);
+  return Number.isInteger(numeric) ? numeric : null;
+}
 // GET /api/weekly/:id
 export async function GET(_req: Request, { params }: { params: { id: string } }) {
 
   if (!Weekly) return NextResponse.json({ error: "Weekly model not found" }, { status: 500 });
-
+const id = coerceId(params.id);
+  if (id === null) {
+    return NextResponse.json({ error: "Invalid id" }, { status: 400 });
+  }
   try {
-    const row = await Weekly.findUnique({ where: { id: params.id } });
+ const row = await Weekly.findUnique({ where: { id } });
     return NextResponse.json(row ?? null, { headers: { "Cache-Control": "no-store" } });
   } catch (e: any) {
     return NextResponse.json({ error: String(e?.message ?? "Failed") }, { status: 500 });
@@ -42,7 +48,10 @@ export async function GET(_req: Request, { params }: { params: { id: string } })
 export async function PATCH(req: Request, { params }: { params: { id: string } }) {
 
   if (!Weekly) return NextResponse.json({ error: "Weekly model not found" }, { status: 500 });
-
+  const id = coerceId(params.id);
+  if (id === null) {
+    return NextResponse.json({ error: "Invalid id" }, { status: 400 });
+  }
   try {
     const body = await req.json();
     const parsed = updateSchema.safeParse(body);
@@ -53,7 +62,7 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
 
     // try new field names first
     const updated = await Weekly.update({
-      where: { id: params.id },
+      where: { id },
       data: usesNewFields
         ? {
             weekStart: d.weekStart ? parseYMD(d.weekStart) : undefined,
@@ -78,9 +87,13 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
 export async function DELETE(_req: Request, { params }: { params: { id: string } }) {
 
   if (!Weekly) return NextResponse.json({ error: "Weekly model not found" }, { status: 500 });
+  const id = coerceId(params.id);
+  if (id === null) {
+    return NextResponse.json({ error: "Invalid id" }, { status: 400 });
+  }
 
   try {
-    await Weekly.delete({ where: { id: params.id } });
+    await Weekly.delete({ where: { id } });
     return NextResponse.json({ ok: true }, { headers: { "Cache-Control": "no-store" } });
   } catch (e: any) {
     return NextResponse.json({ error: String(e?.message ?? "Failed") }, { status: 400 });
