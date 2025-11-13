@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence, useInView, useReducedMotion } from "framer-motion";
 import { numbers as data } from "@/lib/data/numbers"; // <-- uses your provided values
-
+import Image from "next/image";
 // -------------------------------- Types --------------------------------
 type NumbersData = {
   drivers: number;
@@ -183,11 +183,11 @@ export default function EnchoNumbers() {
         <figure className="relative md:col-span-7">
           {numbers.image ? (
             // Using <img> to avoid next/image domain config errors for external host
-            <img
-              src={numbers.image}
+            <Image  src={numbers.image}
               alt="Mechanical arm render"
-              className="w-full rounded-2xl object-cover"
-            />
+              className="w-full rounded-2xl object-cover"  width={800}
+  height={600}/>
+           
             
           ) : (
             <div className="aspect-[3/2] w-full rounded-2xl bg-gradient-to-br from-gray-50 to-gray-200" aria-hidden />
