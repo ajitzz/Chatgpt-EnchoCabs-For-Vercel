@@ -7,6 +7,10 @@ import { getPrisma } from "@/lib/prisma";
 import { z } from "zod";
 
 const prisma = getPrisma();
+const weeklyEntryModel = (prisma as any).weeklyEntry ?? null;
+const weeklyEarningModel = (prisma as any).weeklyEarning ?? null;
+const Weekly: any = weeklyEntryModel ?? weeklyEarningModel;
+const usesNewFields = Boolean(weeklyEntryModel);
 
 function parseYMD(s: string): Date | null {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(s)) return null;
@@ -14,11 +18,6 @@ function parseYMD(s: string): Date | null {
   const dt = new Date(Date.UTC(y, (m ?? 1) - 1, d ?? 1, 0, 0, 0));
   return Number.isNaN(dt.getTime()) ? null : dt;
 }
-
-function pickWeeklyModel(p: any) {
-  return (p as any).weeklyEntry ?? (p as any).weeklyEarning ?? null;
-}
-
 const updateSchema = z.object({
   weekStart: z.string().optional(),
   weekEnd: z.string().optional(),
@@ -28,7 +27,7 @@ const updateSchema = z.object({
 
 // GET /api/weekly/:id
 export async function GET(_req: Request, { params }: { params: { id: string } }) {
-  const Weekly = pickWeeklyModel(prisma);
+
   if (!Weekly) return NextResponse.json({ error: "Weekly model not found" }, { status: 500 });
 
   try {
@@ -41,7 +40,7 @@ export async function GET(_req: Request, { params }: { params: { id: string } })
 
 // PATCH /api/weekly/:id  (partial update)
 export async function PATCH(req: Request, { params }: { params: { id: string } }) {
-  const Weekly = pickWeeklyModel(prisma);
+
   if (!Weekly) return NextResponse.json({ error: "Weekly model not found" }, { status: 500 });
 
   try {
@@ -53,30 +52,23 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
     const d = parsed.data;
 
     // try new field names first
-    try {
-      const updated = await Weekly.update({
-        where: { id: params.id },
-        data: {
-          weekStart: d.weekStart ? parseYMD(d.weekStart) : undefined,
-          weekEnd: d.weekEnd ? parseYMD(d.weekEnd) : undefined,
-          earnings: d.earnings,
-          trips: d.trips,
-        },
-      });
-      return NextResponse.json(updated);
-    } catch {
-      // fallback to legacy fields
-      const updated = await Weekly.update({
-        where: { id: params.id },
-        data: {
-          weekStartDate: d.weekStart ? parseYMD(d.weekStart) : undefined,
-          weekEndDate: d.weekEnd ? parseYMD(d.weekEnd) : undefined,
-          earningsInINR: d.earnings,
-          tripsCompleted: d.trips,
-        },
-      });
-      return NextResponse.json(updated);
-    }
+    const updated = await Weekly.update({
+      where: { id: params.id },
+      data: usesNewFields
+        ? {
+            weekStart: d.weekStart ? parseYMD(d.weekStart) : undefined,
+            weekEnd: d.weekEnd ? parseYMD(d.weekEnd) : undefined,
+            earnings: d.earnings,
+            trips: d.trips,
+          }
+        : {
+            weekStartDate: d.weekStart ? parseYMD(d.weekStart) : undefined,
+            weekEndDate: d.weekEnd ? parseYMD(d.weekEnd) : undefined,
+            earningsInINR: d.earnings,
+            tripsCompleted: d.trips,
+          },
+    });
+    return NextResponse.json(updated);
   } catch (e: any) {
     return NextResponse.json({ error: String(e?.message ?? "Failed") }, { status: 400 });
   }
@@ -84,7 +76,7 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
 
 // DELETE /api/weekly/:id
 export async function DELETE(_req: Request, { params }: { params: { id: string } }) {
-  const Weekly = pickWeeklyModel(prisma);
+
   if (!Weekly) return NextResponse.json({ error: "Weekly model not found" }, { status: 500 });
 
   try {
