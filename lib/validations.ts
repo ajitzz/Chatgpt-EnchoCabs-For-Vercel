@@ -7,14 +7,11 @@ export const driverSchema = z.object({
     .trim()
     .min(10, "Phone must be at least 10 digits")
     .max(20, "Phone too long")
-    .regex(/^[0-9+\-\s()]+$/, "Invalid phone")
-    .optional(),
-  licenseNo: z.string().trim().optional(),
-  vehicleNo: z.string().trim().optional(),
-  startDate: z
+  .regex(/^[0-9+\-\s()]+$/, "Invalid phone"),
+  licenseNumber: z.string().trim().optional(),
+  joinDate: z
     .string()
-    .regex(/^\d{4}-\d{2}-\d{2}$/, "Use YYYY-MM-DD")
-    .optional(),
+   .regex(/^\d{4}-\d{2}-\d{2}$/, "Use YYYY-MM-DD"),
   profileImageUrl: z.string().url().optional(),
   hidden: z.boolean().optional(),
 });
@@ -25,11 +22,17 @@ export const weeklyEntrySchema = z.object({
   weekStart: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Use YYYY-MM-DD"),
   earnings: z.preprocess(
     (v) => (typeof v === "string" ? Number(v) : v),
-    z.number({ invalid_type_error: "Enter a valid amount" }).finite("Enter a valid amount")
+z
+      .number({ invalid_type_error: "Enter a valid amount" })
+      .finite("Enter a valid amount")
+      .min(0, "Enter a non-negative amount")
   ),
   trips: z.preprocess(
     (v) => (typeof v === "string" ? Number(v) : v),
-    z.number({ invalid_type_error: "Enter a whole number" }).int("Enter a whole number").min(0)
+   z
+      .number({ invalid_type_error: "Enter a whole number" })
+      .int("Enter a whole number")
+      .min(0, "Trips must be 0 or more")
   ),
   notes: z.string().optional(),
 });

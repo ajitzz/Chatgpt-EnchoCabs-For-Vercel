@@ -15,21 +15,43 @@ export default function DriverForm() {
     reset,
   } = useForm<DriverInput>({
     resolver: zodResolver(driverSchema),
-    defaultValues: { hidden: false },
+      defaultValues: {
+      name: "",
+      phone: "",
+      licenseNumber: "",
+      joinDate: "",
+      profileImageUrl: "",
+      hidden: false,
+    },
   });
 
   const onSubmit = async (data: DriverInput) => {
-    const form = new FormData();
-    Object.entries(data).forEach(([k, v]) => {
-      if (v !== undefined && v !== null) form.append(k, String(v));
+   const payload = {
+      name: data.name,
+      phone: data.phone,
+      licenseNumber: data.licenseNumber,
+      joinDate: data.joinDate,
+      profileImageUrl: data.profileImageUrl,
+    };
+    const res = await fetch("/api/drivers", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Accept: "application/json" },
+      body: JSON.stringify(payload),
     });
-    const res = await fetch("/api/drivers", { method: "POST", body: form });
+
     if (!res.ok) {
       const j = await res.json().catch(() => ({}));
       alert(j?.error ?? "Failed");
       return;
     }
-    reset({ hidden: false });
+     reset({
+      name: "",
+      phone: "",
+      licenseNumber: "",
+      joinDate: "",
+      profileImageUrl: "",
+      hidden: false,
+    });
     alert("Driver registered!");
   };
 
@@ -47,16 +69,12 @@ export default function DriverForm() {
           {errors.phone && <p className="text-xs text-red-600">{errors.phone.message}</p>}
         </div>
         <div className="grid gap-2">
-          <Label htmlFor="licenseNo">License No (optional)</Label>
-          <Input id="licenseNo" {...register("licenseNo")} placeholder="DL-XXXX-0000" />
+                <Label htmlFor="licenseNumber">License No (optional)</Label>
+          <Input id="licenseNumber" {...register("licenseNumber")} placeholder="DL-XXXX-0000" />
         </div>
         <div className="grid gap-2">
-          <Label htmlFor="vehicleNo">Vehicle No (optional)</Label>
-          <Input id="vehicleNo" {...register("vehicleNo")} placeholder="KA01AB1234" />
-        </div>
-        <div className="grid gap-2">
-          <Label htmlFor="startDate">Start Date (optional)</Label>
-          <Input id="startDate" type="date" {...register("startDate")} />
+     <Label htmlFor="joinDate">Start Date</Label>
+          <Input id="joinDate" type="date" {...register("joinDate")} />
         </div>
       </div>
 
@@ -64,7 +82,20 @@ export default function DriverForm() {
         <Button type="submit" disabled={isSubmitting}>
           {isSubmitting ? "Saving…" : "Register Driver"}
         </Button>
-        <Button type="button" variant="outline" onClick={() => reset({ hidden: false })}>
+          <Button
+          type="button"
+          variant="outline"
+          onClick={() =>
+            reset({
+              name: "",
+              phone: "",
+              licenseNumber: "",
+              joinDate: "",
+              profileImageUrl: "",
+              hidden: false,
+            })
+          }
+        >
           Reset
         </Button>
       </div>

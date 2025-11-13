@@ -19,6 +19,26 @@ export function getWeekBounds(weekStartISO: string) {
 
   return { start, end };
 }
+export function toUTCISODateString(date: Date) {
+  const yyyy = date.getUTCFullYear();
+  const mm = String(date.getUTCMonth() + 1).padStart(2, "0");
+  const dd = String(date.getUTCDate()).padStart(2, "0");
+  return `${yyyy}-${mm}-${dd}`;
+}
+
+export function addDaysToISODate(isoYYYYMMDD: string, days: number) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(isoYYYYMMDD)) {
+    return isoYYYYMMDD;
+  }
+
+  const [y, m, d] = isoYYYYMMDD.split("-").map(Number);
+  const dt = new Date(Date.UTC(y ?? 0, (m ?? 1) - 1, d ?? 1));
+  dt.setUTCDate(dt.getUTCDate() + days);
+
+  return toUTCISODateString(dt);
+}
+
+
 
 // Key for grouping: Monday ISO (YYYY-MM-DD)
 export function getWeekKeyISO(isoLike: string) {

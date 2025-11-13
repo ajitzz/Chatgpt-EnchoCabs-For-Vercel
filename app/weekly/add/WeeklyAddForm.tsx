@@ -3,7 +3,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { weeklyEntrySchema, type WeeklyEntryInput } from "@/lib/validations";
-import { formatWeekRange } from "@/lib/date";
+import { addDaysToISODate, formatWeekRange, getWeekKeyISO } from "@/lib/date";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -34,10 +34,15 @@ export default function WeeklyAddForm({ drivers }: { drivers: DriverOpt[] }) {
   const weekPreview = useMemo(() => (ws ? formatWeekRange(ws) : ""), [ws]);
 
   const onSubmit = async (data: WeeklyEntryInput) => {
+     const normalizedWeekStart = getWeekKeyISO(data.weekStart);
+    const weekEnd = addDaysToISODate(normalizedWeekStart, 6);
+    const payload = { ...data, weekStart: normalizedWeekStart, weekEnd };
+
+
     const res = await fetch("/api/weekly", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
+      body: JSON.stringify(payload),
     });
     if (!res.ok) {
       const j = await res.json().catch(() => ({}));
