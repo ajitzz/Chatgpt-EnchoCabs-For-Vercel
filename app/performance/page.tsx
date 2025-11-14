@@ -1,10 +1,15 @@
-// app/performance/page.tsx
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 import { unstable_noStore as noStore } from "next/cache";
+
 import { getPrisma } from "@/lib/prisma";
-import PerformanceClient, { type DriverView } from "./performanceClient";
+
+
+import PerformanceClient, {
+  type DriverDTO,
+  type WeeklyEntryDTO,
+} from "./performanceClient";
 
 function toISODateOnly(d: Date | string | null | undefined): string {
   if (!d) return "";
@@ -12,6 +17,7 @@ function toISODateOnly(d: Date | string | null | undefined): string {
   const utc = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
   return utc.toISOString().slice(0, 10);
 }
+
 function toNumber(n: unknown): number {
   if (n == null) return 0;
   if (typeof n === "number") return Number.isFinite(n) ? n : 0;
@@ -19,39 +25,53 @@ function toNumber(n: unknown): number {
   return Number.isFinite(asNum) ? asNum : 0;
 }
 
+function mapWeeklyEntry(entry: any): WeeklyEntryDTO {
+  return {
+    id: entry.id,
+    weekStart: toISODateOnly(entry.weekStart ?? entry.weekStartDate),
+    weekEnd: toISODateOnly(entry.weekEnd ?? entry.weekEndDate),
+    earnings: toNumber(entry.earnings ?? entry.earningsInINR),
+    trips: toNumber(entry.trips ?? entry.tripsCompleted),
+    notes: entry.notes ?? null,
+  };
+}
+
+function mapDriver(driver: any, weeklyEntries: any[] | null | undefined): DriverDTO {
+  return {
+    id: driver.id,
+    name: driver.name,
+    licenseNumber: driver.licenseNumber ?? "",
+    phone: driver.phone ?? "",
+    joinDate: toISODateOnly(driver.joinDate ?? null),
+    profileImageUrl: driver.profileImageUrl ?? "",
+    createdAt: driver.createdAt
+      ? new Date(driver.createdAt).toISOString()
+      : new Date().toISOString(),
+    weeklyEntries: (weeklyEntries ?? []).map(mapWeeklyEntry),
+  };
+}
+
 export default async function Page() {
   noStore();
   const prisma = getPrisma();
-
-  // Try relation include first
-  try {
+    try {
     const drivers = await prisma.driver.findMany({
       where: { hidden: false as any, removedAt: null as any },
-      include: { weeklyEntries: { orderBy: { weekEnd: "desc" as const } } },
+ include: {
+        weeklyEntries: {
+          orderBy: [{ weekStart: "desc" as const }, { id: "desc" as const }],
+        },
+      },
       orderBy: { createdAt: "desc" as const },
     });
+        const data = drivers.map((driver: any) =>
+      mapDriver(driver, driver.weeklyEntries ?? [])
+    );
 
-    const views: DriverView[] = drivers.map((d: any) => ({
-      id: d.id,
-      name: d.name,
-      profileImageUrl: d.profileImageUrl ?? null,
-      licenseNumber: d.licenseNumber ?? null,
-      rating: d.rating ?? null,
-      weeklyEarnings: (d.weeklyEntries ?? []).map((w: any) => ({
-        id: w.id,
-        weekStartDate: toISODateOnly(w.weekStart ?? w.weekStartDate),
-        weekEndDate: toISODateOnly(w.weekEnd ?? w.weekEndDate),
-        earningsInINR: toNumber(w.earnings ?? w.earningsInINR),
-        tripsCompleted: toNumber(w.trips ?? w.tripsCompleted),
-      })),
-    }));
-
-    return <PerformanceClient drivers={views} />;
-  } catch (e) {
-    console.warn("[performance] relation include failed; falling back", e);
+    return <PerformanceClient drivers={data} />;
+  } catch (error) {
+    console.warn("[performance] relation include failed; falling back", error);
   }
-
-  // Fallback: fetch drivers without select (avoid TS errors on optional fields)
   const driversOnly = await prisma.driver.findMany({
     where: { hidden: false as any, removedAt: null as any },
     orderBy: { name: "asc" as const },
@@ -61,39 +81,27 @@ export default async function Page() {
   const weeklyRows: any[] = Weekly
     ? await Weekly.findMany({
         where: { driverId: { in: driversOnly.map((d: any) => d.id) } },
-        include: { driver: { select: { id: true, name: true } } },
+        include: { driver: { select: { id: true } } },
         orderBy: [{ weekEnd: "desc" as const }],
       }).catch(async () => {
         return await Weekly.findMany({
           where: { driverId: { in: driversOnly.map((d: any) => d.id) } },
-          include: { driver: { select: { id: true, name: true } } },
+          include: { driver: { select: { id: true } } },
           orderBy: [{ weekStart: "desc" as const }],
         });
       })
     : [];
 
   const byDriver = new Map<string, any[]>();
-  for (const w of weeklyRows) {
-    const k = w.driverId ?? w.driver?.id;
-    if (!k) continue;
-    if (!byDriver.has(k)) byDriver.set(k, []);
-    byDriver.get(k)!.push(w);
+   for (const row of weeklyRows) {
+    const driverId = row.driverId ?? row.driver?.id;
+    if (!driverId) continue;
+    if (!byDriver.has(driverId)) byDriver.set(driverId, []);
+    byDriver.get(driverId)!.push(row);
   }
+  const data = driversOnly.map((driver: any) =>
+    mapDriver(driver, byDriver.get(driver.id) ?? [])
+  );
 
-  const views: DriverView[] = driversOnly.map((d: any) => ({
-    id: d.id,
-    name: d.name,
-    profileImageUrl: (d as any).profileImageUrl ?? null,
-    licenseNumber: (d as any).licenseNumber ?? null,
-    rating: (d as any).rating ?? null,
-    weeklyEarnings: (byDriver.get(d.id) ?? []).map((w: any) => ({
-      id: w.id,
-      weekStartDate: toISODateOnly(w.weekStart ?? w.weekStartDate),
-      weekEndDate: toISODateOnly(w.weekEnd ?? w.weekEndDate),
-      earningsInINR: toNumber(w.earnings ?? w.earningsInINR),
-      tripsCompleted: toNumber(w.trips ?? w.tripsCompleted),
-    })),
-  }));
-
-  return <PerformanceClient drivers={views} />;
+  return <PerformanceClient drivers={data} />;
 }
