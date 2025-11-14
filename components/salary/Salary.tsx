@@ -6,7 +6,7 @@ export default function Salary() {
       <div className={`container ${s.grid}`}>
         <div className={s.frame}>
           <iframe
-            src="https://www.youtube.com/embed/4Bsc2uI_LsM?rel=0&modestbranding=1"
+            src="https://www.youtube.com/shorts/4BiAYfkFkyI"
             title="Salary Plan Video"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
             allowFullScreen

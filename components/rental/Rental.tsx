@@ -22,7 +22,7 @@ export default function Rental() {
 
         <div className={s.frame}>
           <iframe
-            src="https://www.youtube.com/embed/jdiy6sz1-fk?rel=0&modestbranding=1"
+            src="https://www.youtube.com/shorts/4BiAYfkFkyI"
             title="Rental Plan Video"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
             allowFullScreen

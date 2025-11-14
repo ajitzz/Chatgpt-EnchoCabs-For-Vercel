@@ -3,9 +3,10 @@ import type { Metadata } from 'next';
 import { Montserrat } from "next/font/google";
 import './globals.css';
 
-   import Header from '@/components/header/Header';
+  import Header from '@/components/header/Header';
+import { RouteThemeProvider } from '@/components/theme/RouteThemeProvider';
 
-   const montserrat = Montserrat({
+const montserrat = Montserrat({
   subsets: ["latin"],
   weight: ["400","500","600","700"],   // add the weights you’ll use
   display: "swap",
@@ -29,11 +30,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body>
-      <>
-     
-            <Header />
-            {children}
-      </></body>
+       <RouteThemeProvider>
+          <Header />
+          {children}
+        </RouteThemeProvider></body>
     </html>
   );
 }

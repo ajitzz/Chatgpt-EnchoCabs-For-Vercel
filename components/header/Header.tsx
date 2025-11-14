@@ -9,7 +9,8 @@ export default function Header(){
   return (
     <header className={s.header}>
       <div id="nav" className={`container ${s.nav}`}>
-        <div className={s.brand}>ENCHO</div>
+        <Link href={"/"} className={s.brand}>ENCHO</Link>
+
         <ul className={s.menu}>
            <Link href={"/"} className=" h-full flex justify-start">
            Home

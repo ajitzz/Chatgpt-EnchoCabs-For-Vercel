@@ -188,6 +188,70 @@ export default function AboutPage() {
                 better earnings.
               </p>
             </div>
+
+             <div className="col-span-1 sm:col-span-2 rounded-2xl border border-slate-100 bg-white/80 p-5 sm:p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
+            <div className="relative h-64 w-full max-w-sm">
+              {/* Back card */}
+              <div className="absolute inset-x-6 top-6 rounded-3xl border border-emerald-100/70 bg-gradient-to-br from-emerald-50 to-sky-50 shadow-md shadow-emerald-100/60 transition-transform duration-700 ease-out hover:-translate-y-1" />
+              {/* Middle card */}
+              <div className="absolute inset-x-3 top-3 rounded-3xl border border-white/60 bg-white/80 shadow-lg shadow-emerald-200/70 backdrop-blur-md" />
+              {/* Foreground card content */}
+              <div className="relative flex h-full flex-col justify-between rounded-3xl border border-emerald-100 bg-white/95 p-5 shadow-xl shadow-emerald-200/60">
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <p className="text-xs font-medium uppercase tracking-wide text-emerald-600">
+                      Weekly snapshot
+                    </p>
+                    <p className="mt-1 text-lg font-semibold text-slate-900">
+                      Driver performance
+                    </p>
+                  </div>
+                  <div className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-1 text-[11px] font-medium text-emerald-700">
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                    Live
+                  </div>
+                </div>
+
+                <div className="mt-4 grid grid-cols-3 gap-2 text-xs">
+                  <div className="rounded-2xl bg-emerald-600 px-3 py-3 text-white shadow-sm">
+                    <p className="text-[11px] opacity-80">This week</p>
+                    <p className="mt-1 text-lg font-semibold">₹24,300</p>
+                    <p className="mt-1 text-[10px] opacity-80">70 trips</p>
+                  </div>
+                   <div className="rounded-2xl bg-slate-50 px-3 py-3 text-slate-900">
+                    <p className="text-[11px] text-slate-500">Total Earnigs</p>
+                    <p className="mt-1 text-lg font-semibold">₹50,000★</p>
+                    <p className="mt-1 text-[10px] text-slate-500">Last month</p>
+                  </div>
+
+                  <div className="rounded-2xl bg-emerald-50 px-3 py-3 text-slate-900">
+                    <p className="text-[11px] text-emerald-700">Best week</p>
+                    <p className="mt-1 text-lg font-semibold">₹32,800</p>
+                    <p className="mt-1 text-[10px] text-slate-500">High streak</p>
+                  </div>
+
+                </div>
+
+                <div className="mt-4 flex items-center justify-between gap-3 text-[11px] text-slate-500">
+                  <p>
+                    Simple visuals, smooth transitions, and an experience that works
+                    great on the move.
+                  </p>
+                  <div className="flex -space-x-2">
+                    <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-emerald-100 text-[11px] font-semibold text-emerald-900 shadow-sm">
+                      D1
+                    </span>
+                    <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-emerald-50 text-[11px] font-semibold text-emerald-900 shadow-sm">
+                      D2
+                    </span>
+                    <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-white text-[11px] font-semibold text-emerald-900 shadow-sm">
+                      +
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
           </FadeInSection>
         </div>
 

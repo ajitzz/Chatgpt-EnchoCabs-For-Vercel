@@ -132,6 +132,7 @@ function Metric({
   return (
     <div ref={ref} className="flex flex-col justify-end" data-testid={`metric-${label.replace(/\s+/g, "-").toLowerCase()}`}>
       <div aria-live="off">
+       
         <motion.span
           aria-hidden
           initial={{ opacity: 0, y: 4 }}

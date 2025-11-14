@@ -1,7 +1,7 @@
 export const numbers = {
   drivers: 40,
   coreTeams: 5,
-  earnings: 50000,
+  earnings: 75000,
   locationsTitle: 'Locations (Bangalore)',
   locations: ['Madiwala', 'Bagaluru', 'Marthahalli', 'Electronic City'],
   image:

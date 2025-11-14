@@ -18,12 +18,15 @@ body{
   background:var(--bg);
   color:var(--text);
   font-family:var(--font-inter), system-ui, -apple-system, Segoe UI, Roboto, Arial;
+   transition:background-color 0.3s ease, color 0.3s ease;
 }
 a{color:inherit;text-decoration:none}
 img{max-width:100%;display:block}
 .container{max-width:var(--max); margin:0 auto; padding-inline:clamp(16px,4vw,28px)}
 .section{padding:96px 0}
 .light{background:#fff;color:#111}
+.no-scrollbar{scrollbar-width:none;-ms-overflow-style:none}
+.no-scrollbar::-webkit-scrollbar{display:none}
 
 /* ---- Design tokens (HSL only, as you did) ---- */
 @layer base {
