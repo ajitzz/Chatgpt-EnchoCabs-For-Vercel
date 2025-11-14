@@ -20,14 +20,14 @@ export default function Rental() {
       </div>
         </div>
 
-        <div className={s.frame}>
-          <iframe
-            src="https://www.youtube.com/shorts/4BiAYfkFkyI"
-            title="Rental Plan Video"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            allowFullScreen
-          />
-        </div>
+       <div className={s.frame}>
+  <iframe
+    src="https://www.youtube.com/embed/4BiAYfkFkyI"
+    title="Rental Plan Video"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+    allowFullScreen
+  />
+</div>
       </div>
         <div className={`container ${s.grid} `}>
          <PremiumWhatYouGetCard  />
