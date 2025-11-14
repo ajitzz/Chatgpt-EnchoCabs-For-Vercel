@@ -17,15 +17,18 @@ export default function Header(){
            <Link href={"/performance"} className=" h-full flex justify-start">
            Earnings
            </Link>
-           <Link href={"/drivers"} className=" h-full flex justify-start">
-           Register
+            <Link href={"/about"} className=" h-full flex justify-start">
+           About
            </Link>
-           <Link href={"/weekly/add"} className=" h-full flex justify-start">
+           {/* <Link href={"/drivers"} className=" h-full flex justify-start">
+           Register
+           </Link> */}
+           {/* <Link href={"/weekly/add"} className=" h-full flex justify-start">
            Entry
            </Link>
             <Link href={"/weekly/manage"} className=" h-full flex justify-start">
            Manage
-           </Link>
+           </Link> */}
         </ul>
         <div className={s.actions}>
           <a className={s.call} href="tel:+9163647604396">
