@@ -24,9 +24,14 @@ export type DriverDTO = {
   phone: string;
   joinDate: string; // yyyy-mm-dd
   profileImageUrl?: string | null;
-  
   createdAt: string;
   weeklyEntries: WeeklyEntryDTO[];
+};
+type WeekInfo = {
+  label: "This Week" | "Recent Week";
+  start: string;
+  end: string;
+  entries: { driver: DriverDTO; entry: WeeklyEntryDTO }[];
 };
 
 
@@ -208,35 +213,70 @@ export default function PerformanceClient({ drivers }: { drivers: DriverDTO[] })
   const curStart = iso(startOfWeekMon(now));
   const curEnd = iso(endOfWeekSun(now));
 
+  const weekInfo = React.useMemo<WeekInfo>(() => {
+    const pairs = drivers.flatMap((driver) =>
+      driver.weeklyEntries.map((entry) => ({ driver, entry }))
+    );
+
+    const byRange = (start: string, end: string) =>
+      pairs.filter((p) => p.entry.weekStart === start && p.entry.weekEnd === end);
+
+    const currentEntries = byRange(curStart, curEnd);
+    if (currentEntries.length > 0)
+      return {
+        label: "This Week" as const,
+        start: curStart,
+        end: curEnd,
+        entries: currentEntries,
+      };
+
+    const latest = [...pairs]
+      .filter((p) => p.entry.weekStart && p.entry.weekEnd)
+      .sort((a, b) => (a.entry.weekEnd < b.entry.weekEnd ? 1 : -1))[0];
+
+    if (latest)
+      return {
+        label: "Recent Week" as const,
+        start: latest.entry.weekStart,
+        end: latest.entry.weekEnd,
+        entries: byRange(latest.entry.weekStart, latest.entry.weekEnd),
+      };
+
+    return {
+      label: "This Week" as const,
+      start: curStart,
+      end: curEnd,
+      entries: [],
+    };
+  }, [drivers, curStart, curEnd]);
+
+
  
   const kpi = React.useMemo(() => {
+      const activeIds = new Set<string>();
     let total = 0;
  
     let top = 0;
     let topName = "—";
 
-   
-    for (const d of drivers) {
-      const row = d.weeklyEntries.find(
-        (w) => w.weekStart === curStart && w.weekEnd === curEnd
-      );
- 
-      const amt = row?.earnings ?? 0;
+   for (const { driver, entry } of weekInfo.entries) {
+      const amt = entry.earnings ?? 0;
       total += amt;
-  
+  activeIds.add(driver.id);
       if (amt > top) {
         top = amt;
-        topName = d.name;
+        topName = driver.name;
       }
     }
 
 
-    const active = drivers.length;
+ const active = activeIds.size;
     const avg = active ? Math.round(total / active) : 0;
 
   
     return { total, active, avg, top, topName };
-  }, [drivers, curStart, curEnd]);
+   }, [weekInfo]);
+
 
   const sorted = React.useMemo(() => {
     return [...drivers].sort((a, b) => {
@@ -260,36 +300,52 @@ export default function PerformanceClient({ drivers }: { drivers: DriverDTO[] })
 
   const [open, setOpen] = React.useState(false);
   const [current, setCurrent] = React.useState<DriverDTO | null>(null);
-
+ const weekRangeLabel = formatRange(weekInfo.start, weekInfo.end);
+  const sectionLabel =
+    weekInfo.label === "This Week" ? "This Week" : "Recent Week";
+  const topEarnerTitle =
+    weekInfo.label === "This Week" ? "Top Earner This Week" : "Top Earner Recent Week";
   return (
   
     <div className="mx-auto max-w-7xl px-3 py-4 sm:px-6 sm:py-6 lg:py-8">
-  
+       <div className="mb-2 flex flex-wrap items-baseline justify-between gap-2">
+        <div className="text-sm font-semibold text-gray-700">{sectionLabel}</div>
+        <div className="text-xs text-gray-500">{weekRangeLabel}</div>
+      </div>
 
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <Card className="p-4 sm:p-5 hover:-translate-y-0.5 hover:shadow-md">
           <div className="text-xs text-gray-500">Total Weekly Earnings</div>
           <div className="mt-1 text-2xl font-bold">{inr(kpi.total)}</div>
-          
+             <div className="text-[11px] text-gray-400">{weekRangeLabel}</div>
         </Card>
         <Card className="p-4 sm:p-5 hover:-translate-y-0.5 hover:shadow-md">
           <div className="text-xs text-gray-500">Active Drivers</div>
           <div className="mt-1 text-2xl font-bold">{kpi.active}</div>
-        </Card>
+         <div className="text-[11px] text-gray-400">{weekRangeLabel}</div>
+         </Card>
         <Card className="p-4 sm:p-5 hover:-translate-y-0.5 hover:shadow-md">
           <div className="text-xs text-gray-500">Avg Weekly Earnings</div>
           <div className="mt-1 text-2xl font-bold">{inr(kpi.avg)}</div>
+        <div className="text-[11px] text-gray-400">{weekRangeLabel}</div>
         </Card>
-        <Card className="p-4 sm:p-5 hover:-translate-y-0.5 hover:shadow-md">
-          <div className="text-xs text-gray-500">Top Earner This Week</div>
+       <Card
+          className={cn(
+            "p-4 sm:p-5 hover:-translate-y-0.5 hover:shadow-md",
+            "border-transparent bg-[#3C8D61] text-white"
+          )}
+        >
+          <div className="text-xs text-white/90">{topEarnerTitle}</div>
+
           <div className="mt-1 flex items-baseline gap-2">
-            <span className="text-2xl font-bold">{inr(kpi.top)}</span>
-            <span className="truncate text-sm text-gray-600">{kpi.topName}</span>
+            <span className="text-2xl font-bold">{kpi.topName}</span>
+            <span className="truncate text-sm text-white-80">{inr(kpi.top)}</span>
           </div>
+          <div className="text-[11px] text-gray-400">{weekRangeLabel}</div>
         </Card>
       </div>
 
-      <h2 className="mt-6 mb-3 text-base font-semibold sm:text-lg">Drivers Testimonials</h2>
+      <h2 className="mt-6 mb-3 text-base font-semibold sm:text-lg">Drivers Earnings</h2>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {sorted.map((d) => {
           const totalTrips = d.weeklyEntries.reduce((s, r) => s + (r.trips || 0), 0);
