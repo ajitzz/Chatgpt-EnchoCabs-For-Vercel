@@ -1,10 +1,11 @@
-import React from 'react';
-import type { Metadata } from 'next';
+import React from "react";
+import type { Metadata } from "next";
 import { Montserrat } from "next/font/google";
-import './globals.css';
+import "./globals.css";
 
-  import Header from '@/components/header/Header';
-import { RouteThemeProvider } from '@/components/theme/RouteThemeProvider';
+import Header from "@/components/header/Header";
+import { RouteThemeProvider } from "@/components/theme/RouteThemeProvider";
+import { Toaster } from "@/components/ui/sonner";
 
 const montserrat = Montserrat({
   subsets: ["latin"],
@@ -16,24 +17,25 @@ const montserrat = Montserrat({
 
 
 export const metadata: Metadata = {
-  title: 'ENCHO — Taxi Rental for Drivers',
-  description: 'Accommodation, food, vehicles — healthy environment to empower drivers to earn more.',
+ title: "ENCHO — Taxi Rental for Drivers",
+  description:
+    "Accommodation, food, vehicles — healthy environment to empower drivers to earn more.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${montserrat.variable} `}>
+      <html lang="en" className={`${montserrat.variable}`}>
       <head>
-        <link
-          rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
-        />
+              <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
       </head>
       <body>
-       <RouteThemeProvider>
+    <RouteThemeProvider>
           <Header />
           {children}
-        </RouteThemeProvider></body>
+           <Toaster richColors closeButton />
+        </RouteThemeProvider>
+      </body>
     </html>
   );
 }

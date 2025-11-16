@@ -49,10 +49,60 @@ export async function GET(req: Request) {
 
   const { searchParams } = new URL(req.url);
   const driverId = searchParams.get("driverId") ?? undefined;
+  const weekStartParam = searchParams.get("weekStart");
+  const rangeStartParam = searchParams.get("rangeStart");
+  const rangeEndParam = searchParams.get("rangeEnd");
+
+  let weekStartFilter: Date | null = null;
+  if (weekStartParam) {
+    weekStartFilter = parseYMD(weekStartParam);
+    if (!weekStartFilter) {
+      return NextResponse.json({ error: "Invalid weekStart" }, { status: 400 });
+    }
+  }
+
+  let rangeStart: Date | null = null;
+  let rangeEnd: Date | null = null;
+  if (rangeStartParam || rangeEndParam) {
+    if (!rangeStartParam || !rangeEndParam) {
+      return NextResponse.json(
+        { error: "rangeStart and rangeEnd are both required" },
+        { status: 400 },
+      );
+    }
+
+    rangeStart = parseYMD(rangeStartParam);
+    rangeEnd = parseYMD(rangeEndParam);
+
+    if (!rangeStart || !rangeEnd) {
+      return NextResponse.json({ error: "Invalid rangeStart/rangeEnd" }, { status: 400 });
+    }
+    if (rangeStart > rangeEnd) {
+      return NextResponse.json({ error: "rangeStart must be before rangeEnd" }, { status: 400 });
+    }
+  }
 
   try {
+    const where: Record<string, any> = {};
+    if (driverId) {
+      where.driverId = driverId;
+    }
+    const startField = usesNewFields ? "weekStart" : "weekStartDate";
+    const endField = usesNewFields ? "weekEnd" : "weekEndDate";
+
+    if (weekStartFilter) {
+      where[startField] = weekStartFilter;
+    }
+    if (rangeStart && rangeEnd) {
+      where.AND = [
+        ...(where.AND ?? []),
+        { [startField]: { lte: rangeEnd } },
+        { [endField]: { gte: rangeStart } },
+      ];
+    }
+
     const rows = await Weekly.findMany({
-      where: driverId ? { driverId } : undefined,
+        where: Object.keys(where).length ? where : undefined,
       include: { driver: { select: { id: true, name: true } } },
       // Prefer weekEnd (new schema), fall back to weekStart (old)
       orderBy: [usesNewFields ? { weekEnd: "desc" } : { weekStart: "desc" }],
