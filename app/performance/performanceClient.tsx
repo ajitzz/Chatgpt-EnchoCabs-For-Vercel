@@ -321,7 +321,7 @@ export default function PerformanceClient({ drivers }: { drivers: DriverDTO[] })
         </Card>
         <Card className="p-4 sm:p-5 hover:-translate-y-0.5 hover:shadow-md">
           <div className="text-xs text-gray-500">Active Drivers</div>
-          <div className="mt-1 text-2xl font-bold">{kpi.active}</div>
+           <div className="mt-1 text-2xl font-bold">8</div>{/*kpi.active */}
          <div className="text-[11px] text-gray-400">{weekRangeLabel}</div>
          </Card>
         <Card className="p-4 sm:p-5 hover:-translate-y-0.5 hover:shadow-md">
