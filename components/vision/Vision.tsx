@@ -2,7 +2,7 @@ import Image from "next/image";
 import type { CSSProperties } from "react";
 
 const VISION_BG = "#050505";
-const VISION_IMAGE = "https://i.ibb.co/Hp7SG7T2/Chat-GPT-Image-Sep-15-2025-at-03-33-11-AM.png";
+const VISION_IMAGE = "https://i.ibb.co/XfHN0qfB/Adobe-Express-file.png";
 const sectionStyle = { "--vision-bg": VISION_BG } as CSSProperties;
 
 export default function Vision() {  return (
@@ -36,7 +36,7 @@ export default function Vision() {  return (
 
          <div className="relative flex justify-center lg:justify-end">
             <div className="relative inline-flex max-w-xl items-center justify-center  bg-[--vision-bg] p-4 shadow-[0_40px_80px_-40px_rgba(0,0,0,0.85)]">
-              <div className="overflow-hidden rounded-3xl bg-gradient-to-br from-neutral-900 to-neutral-950">
+              <div className="overflow-hidden rounded-3xl  ">
                 <Image
                   className="h-full w-full  object-cover"
                   src={VISION_IMAGE}
